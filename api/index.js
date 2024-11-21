@@ -1,10 +1,7 @@
-﻿// server/index.js
-
-const express = require('express');
+﻿const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
-const axios = require('axios'); // Import axios for proxy
-const extractionRoutes = require('./routes/extraction');
+const axios = require('axios');
 require('dotenv').config();
 
 const app = express();
@@ -39,10 +36,9 @@ app.use((req, res, next) => {
   next();
 });
 
-// In your CORS options
 const corsOptions = {
   origin: '*',
-  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],  // Added PUT
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: [
     'Origin',
     'X-Requested-With',
@@ -58,10 +54,8 @@ const corsOptions = {
   optionsSuccessStatus: 204
 };
 
-// Apply CORS middleware
 app.use(cors(corsOptions));
 
-// Additional CORS headers middleware
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
@@ -85,7 +79,6 @@ app.use((req, res, next) => {
   next();
 });
 
-// Response logging middleware
 app.use((req, res, next) => {
   const originalSend = res.send;
   res.send = function (data) {
@@ -101,12 +94,10 @@ app.use((req, res, next) => {
   next();
 });
 
-// Import routes
 const experimentRoutes = require('./routes/experiments');
 const trackingRoutes = require('./routes/tracking');
 const healthRoutes = require('./routes/health');
 
-// Special handling for script requests
 app.get('/api/v1/experiments/:id/script', (req, res, next) => {
   console.log('\n📜 Script Request:', {
     experimentId: req.params.id,
@@ -127,7 +118,6 @@ app.get('/api/v1/experiments/:id/script', (req, res, next) => {
   next();
 });
 
-// Proxy endpoint
 app.get('/proxy', async (req, res) => {
   try {
     const { url } = req.query;
@@ -138,14 +128,10 @@ app.get('/proxy', async (req, res) => {
   }
 });
 
-// Mount routes
-app.use('/api/v1/extraction', extractionRoutes);    
 app.use('/api/v1/experiments', experimentRoutes);
 app.use('/api/v1/tracking', trackingRoutes);
 app.use('/health', healthRoutes);
 
-
-// Basic route for testing
 app.get('/', (req, res) => {
   res.json({
     message: 'ExperimentAI API Server',
@@ -155,7 +141,6 @@ app.get('/', (req, res) => {
   });
 });
 
-// 404 handler
 app.use((req, res) => {
   res.status(404).json({
     error: 'Not Found',
@@ -164,7 +149,6 @@ app.use((req, res) => {
   });
 });
 
-// Error handling middleware
 app.use((err, req, res, next) => {
   console.error('\n❌ Error:', {
     timestamp: new Date().toISOString(),
@@ -181,7 +165,6 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Server startup
 const startServer = async () => {
   try {
     app.listen(PORT, () => {
@@ -202,7 +185,6 @@ const startServer = async () => {
   }
 };
 
-// Global error handlers
 process.on('uncaughtException', (error) => {
   console.error('\n💥 Uncaught Exception:', {
     timestamp: new Date().toISOString(),
@@ -221,7 +203,6 @@ process.on('unhandledRejection', (reason, promise) => {
   process.exit(1);
 });
 
-// Graceful shutdown
 process.on('SIGTERM', () => {
   console.log('\n👋 Received SIGTERM - Graceful shutdown initiated');
   process.exit(0);
@@ -232,7 +213,6 @@ process.on('SIGINT', () => {
   process.exit(0);
 });
 
-// Start the server
 startServer();
 
 module.exports = app;

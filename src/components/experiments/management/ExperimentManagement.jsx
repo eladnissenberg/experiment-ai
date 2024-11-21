@@ -26,18 +26,16 @@ const ExperimentManagement = () => {
   // API Handlers
   const handleExperimentCreated = useCallback(async (experimentData) => {
     try {
-      const response = await fetch('http://localhost:3000/api/v1/experiments', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/experiments`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(experimentData)
       });
-
-      if (!response.ok) {
-        throw new Error('Failed to create experiment');
-      }
-
+  
+      if (!response.ok) throw new Error('Failed to create experiment');
+  
       setRefreshTrigger(prev => prev + 1);
       setNewExperimentModalOpen(false);
       setError(null);
@@ -45,11 +43,12 @@ const ExperimentManagement = () => {
       setError('Failed to create experiment: ' + err.message);
     }
   }, []);
-
+  
+  // Update handleExperimentUpdate
   const handleExperimentUpdate = useCallback(async (updatedExperiment) => {
     try {
       const response = await fetch(
-        `http://localhost:3000/api/v1/experiments/${updatedExperiment.id}`,
+        `${import.meta.env.VITE_API_URL}/experiments/${updatedExperiment.id}`,
         {
           method: 'PUT',
           headers: {
@@ -58,11 +57,9 @@ const ExperimentManagement = () => {
           body: JSON.stringify(updatedExperiment)
         }
       );
-
-      if (!response.ok) {
-        throw new Error('Failed to update experiment');
-      }
-
+  
+      if (!response.ok) throw new Error('Failed to update experiment');
+  
       setRefreshTrigger(prev => prev + 1);
       setEditingExperiment(null);
       setError(null);
@@ -70,20 +67,19 @@ const ExperimentManagement = () => {
       setError('Failed to update experiment: ' + err.message);
     }
   }, []);
-
+  
+  // Update handleExperimentDelete
   const handleExperimentDelete = useCallback(async (experimentId) => {
     try {
       const response = await fetch(
-        `http://localhost:3000/api/v1/experiments/${experimentId}`,
+        `${import.meta.env.VITE_API_URL}/experiments/${experimentId}`,
         {
           method: 'DELETE',
         }
       );
-
-      if (!response.ok) {
-        throw new Error('Failed to delete experiment');
-      }
-
+  
+      if (!response.ok) throw new Error('Failed to delete experiment');
+  
       setRefreshTrigger(prev => prev + 1);
       setDeletingExperiment(null);
       setError(null);
@@ -93,11 +89,12 @@ const ExperimentManagement = () => {
       return false;
     }
   }, []);
-
+  
+  // Update handleStatusChange
   const handleStatusChange = useCallback(async (experimentId, newStatus) => {
     try {
       const response = await fetch(
-        `http://localhost:3000/api/v1/experiments/${experimentId}/status`,
+        `${import.meta.env.VITE_API_URL}/experiments/${experimentId}/status`,
         {
           method: 'PATCH',
           headers: {
@@ -106,11 +103,9 @@ const ExperimentManagement = () => {
           body: JSON.stringify({ status: newStatus })
         }
       );
-
-      if (!response.ok) {
-        throw new Error('Failed to update experiment status');
-      }
-
+  
+      if (!response.ok) throw new Error('Failed to update experiment status');
+  
       setRefreshTrigger(prev => prev + 1);
       setError(null);
       return true;

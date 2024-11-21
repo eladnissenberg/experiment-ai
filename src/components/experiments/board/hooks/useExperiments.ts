@@ -4,7 +4,7 @@ import {
   STAGE_TO_STATUS_MAP,
   BoardStage 
 } from '../constants';
-import { Experiment } from '../types';
+import { Experiment, ExperimentStatus } from '../types';
 
 interface UseExperimentsReturn {
   experiments: Experiment[];
@@ -14,17 +14,27 @@ interface UseExperimentsReturn {
   updateExperimentStatus: (experimentId: string, stage: BoardStage) => Promise<boolean>;
 }
 
+declare global {
+  interface ImportMeta {
+    env: {
+      VITE_API_URL: string;
+    };
+  }
+}
+
 export const useExperiments = (refreshTrigger = 0): UseExperimentsReturn => {
-  const [experiments, setExperiments] = useState([] as Experiment[]);
+  const [experiments, setExperiments] = useState<Experiment[]>([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null as string | null);
+  const [error, setError] = useState<string | null>(null);
+
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api/v1';
 
   const fetchExperiments = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
 
-      const response = await fetch('http://localhost:3000/api/v1/experiments', {
+      const response = await fetch(`${API_URL}/experiments`, {
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
@@ -46,7 +56,7 @@ export const useExperiments = (refreshTrigger = 0): UseExperimentsReturn => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [API_URL]);
 
   useEffect(() => {
     fetchExperiments();
@@ -57,37 +67,30 @@ export const useExperiments = (refreshTrigger = 0): UseExperimentsReturn => {
       setLoading(true);
       setError(null);
 
-      // Map stage to status according to your server's expectations
-      let status: string;
-      switch (stage) {
-        case 'proposed':
-          status = 'proposed';
-          break;
-        case 'approved':
-          status = 'approved';
-          break;
-        case 'running':
-          status = 'active'; // Note: server expects 'active' for running state
-          break;
-        case 'finished':
-          status = 'completed';
-          break;
-        default:
-          status = 'proposed';
-      }
+      let status: ExperimentStatus = ((): ExperimentStatus => {
+        switch (stage) {
+          case 'proposed':
+            return EXPERIMENT_STATUSES.PROPOSED;
+          case 'approved':
+            return EXPERIMENT_STATUSES.APPROVED;
+          case 'running':
+            return EXPERIMENT_STATUSES.RUNNING;
+          case 'finished':
+            return EXPERIMENT_STATUSES.COMPLETED;
+          default:
+            return EXPERIMENT_STATUSES.PROPOSED;
+        }
+      })();
 
       const response = await fetch(
-        `http://localhost:3000/api/v1/experiments/${experimentId}/status`,
+        `${API_URL}/experiments/${experimentId}/status`,
         {
           method: 'PATCH',
           headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({ 
-            status,
-            stage 
-          })
+          body: JSON.stringify({ status, stage })
         }
       );
 
@@ -95,7 +98,6 @@ export const useExperiments = (refreshTrigger = 0): UseExperimentsReturn => {
         throw new Error(`Failed to update experiment: ${response.status}`);
       }
 
-      // Optimistically update local state
       setExperiments(prevExperiments =>
         prevExperiments.map(exp =>
           exp.id === experimentId
@@ -104,7 +106,7 @@ export const useExperiments = (refreshTrigger = 0): UseExperimentsReturn => {
         )
       );
 
-      await fetchExperiments(); // Refresh to ensure consistency
+      await fetchExperiments();
       return true;
     } catch (error) {
       const errorMessage = error instanceof Error
