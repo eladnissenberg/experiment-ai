@@ -1,0 +1,42 @@
+(async function() {
+  try {
+    const API_URL = 'http://localhost:3000';
+    // Get all experiments and find the one targeting supporteam.io
+    const experimentsResponse = await fetch(`${API_URL}/api/v1/experiments`);
+    const experiments = await experimentsResponse.json();
+    const targetExperiment = experiments.find(exp => exp.targetURL === 'www.eli-tech.io'); // Updated domain
+    
+    if (!targetExperiment) {
+      throw new Error('No active experiment found for eli-tech.io');
+    }
+ 
+    console.log('[ExperimentAI] Starting experiment injection for:', targetExperiment.id);
+    
+    const scriptUrl = `${API_URL}/api/v1/experiments/${targetExperiment.id}/script`;
+    console.log('[ExperimentAI] Loading script from:', scriptUrl);
+    
+    const script = document.createElement('script');
+    script.src = scriptUrl;
+    script.async = true;
+    script.crossOrigin = "anonymous";
+    
+    script.onload = () => console.log('[ExperimentAI] Script loaded successfully');
+    script.onerror = (error) => {
+      console.error('[ExperimentAI] Script error:', error);
+      // Fallback
+      fetch(scriptUrl, { mode: 'cors' })
+        .then(response => response.text())
+        .then(content => {
+          console.log('[ExperimentAI] Executing script directly');
+          const inlineScript = document.createElement('script');
+          inlineScript.textContent = content;
+          document.body.appendChild(inlineScript);
+        })
+        .catch(err => console.error('[ExperimentAI] Fallback error:', err));
+    };
+    
+    document.body.appendChild(script);
+  } catch (error) {
+    console.error('[ExperimentAI] Error:', error);
+  }
+ })();

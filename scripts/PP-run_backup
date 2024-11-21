@@ -1,0 +1,5 @@
+# Navigate to the script's directory (optional)
+Set-Location -Path "C:\Users\Eli\Desktop\app3\scripts"
+
+# Execute the script  
+& "C:\Users\Eli\Desktop\app3\scripts\create-backup.ps1"

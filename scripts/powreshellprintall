@@ -1,0 +1,2 @@
+# Define new root path
+& "$PSScriptRoot\scripts\Print-App3-Contents.ps1" -rootPath "C:\Users\Eli\Desktop\app3"

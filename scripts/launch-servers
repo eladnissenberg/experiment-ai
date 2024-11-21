@@ -1,0 +1,11 @@
+# start-server.ps1
+
+# Navigate to server directory
+cd C:\Users\Eli\Desktop\app3\server
+npm install
+node index.js
+
+# THAN Navigate to the client directory:
+cd C:\Users\Eli\Desktop\app3
+npm install
+npm run dev

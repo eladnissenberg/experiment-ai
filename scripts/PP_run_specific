@@ -1,0 +1,4 @@
+# Updated PowerShell script for new path
+cd C:\Users\Eli\Desktop\app3\scripts
+
+.\print-specific.ps1
