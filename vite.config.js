@@ -10,21 +10,21 @@ export default defineConfig({
       "/api": {
         target: "http://localhost:3000",
         changeOrigin: true,
-        secure: false
-      }
-    }
+        secure: false,
+      },
+    },
   },
-  base: '/',
+  base: "/",
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "./src")
-    }
+      "@": path.resolve(__dirname, "./src"),
+    },
   },
   build: {
-    outDir: 'dist',
-    sourcemap: true
+    outDir: "dist",
+    sourcemap: true,
   },
   esbuild: {
-    logOverride: { 'this-is-undefined-in-esm': 'silent' }
-  }
+    logOverride: { "this-is-undefined-in-esm": "silent" },
+  },
 });
