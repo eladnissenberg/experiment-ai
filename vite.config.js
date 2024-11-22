@@ -6,7 +6,7 @@ import path from 'path';
 export default defineConfig({
   plugins: [react()],
   server: {
-    port: 5177,  // Changed from default 5173 to 5177
+    port: 5177,
     proxy: {
       '/api': {
         target: 'http://localhost:3000',
