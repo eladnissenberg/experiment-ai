@@ -16,7 +16,9 @@ const corsOptions = {
       'https://www.supporteam.io',
       'http://localhost:5177',
       'http://localhost:3000',
-      'https://experiment-ai-eladnissenberg-experiment-ai.vercel.app' // Your Vercel app URL
+      'https://experiment-ai.vercel.app',
+      'https://experiment-ppx536tdh-experiment-ai.vercel.app',
+      'https://experiment-d8r8qsukz-experiment-ai.vercel.app'
     ];
 
     if (!origin || allowedOrigins.includes(origin)) {
