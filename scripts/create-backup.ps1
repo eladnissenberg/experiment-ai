@@ -1,7 +1,8 @@
-# Get current timestamp in a file-friendly format
+# Get current timestamp in a file friendly format
+
 $timestamp = Get-Date -Format "yyyy-MM-dd_HH-mm-ss"
 
-# Set source and destination paths
+# Set source and the destination paths
 $sourceDir = "C:\Users\Eli\Desktop\app3"
 $backupRoot = "C:\Users\Eli\Desktop\backups"
 $backupDir = Join-Path $backupRoot "backup_$timestamp"
