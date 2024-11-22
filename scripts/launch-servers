@@ -1,7 +1,7 @@
 # start-server.ps1
 
 # Navigate to server directory
-cd C:\Users\Eli\Desktop\app3\server
+cd C:\Users\Eli\Desktop\app3\api
 npm install
 node index.js
 
@@ -9,3 +9,7 @@ node index.js
 cd C:\Users\Eli\Desktop\app3
 npm install
 npm run dev
+
+# Kill all running Node.js
+
+Get-Process -Name "node" | Stop-Process -Force
