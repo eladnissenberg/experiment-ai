@@ -35,10 +35,13 @@ export const useExperiments = (refreshTrigger = 0): UseExperimentsReturn => {
       setError(null);
 
       const response = await fetch(`${API_URL}/experiments`, {
+        method: 'GET', // Explicitly state method
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
-        }
+          'Origin': 'http://localhost:5177'
+        },
+        credentials: 'include'
       });
 
       if (!response.ok) {

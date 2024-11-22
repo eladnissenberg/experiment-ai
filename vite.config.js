@@ -14,10 +14,15 @@ export default defineConfig({
       }
     }
   },
+  base: '/',
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src")
     }
+  },
+  build: {
+    outDir: 'dist',
+    sourcemap: true
   },
   esbuild: {
     logOverride: { 'this-is-undefined-in-esm': 'silent' }

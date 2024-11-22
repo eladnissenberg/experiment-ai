@@ -1,5 +1,6 @@
 ﻿{
   "version": 2,
+  "alias": ["experiment-ai.vercel.app"],
   "builds": [
     {
       "src": "api/index.js",
@@ -8,13 +9,23 @@
     {
       "src": "package.json",
       "use": "@vercel/static-build",
-      "config": { "distDir": "dist" }
+      "config": {
+        "distDir": "dist"
+      }
     }
   ],
   "routes": [
     {
-      "src": "/api/(.*)",
+      "src": "/api/v1/(.*)",
       "dest": "/api/index.js"
+    },
+    {
+      "src": "/health",
+      "dest": "/api/index.js"
+    },
+    {
+      "src": "^/assets/(.*)",
+      "dest": "/assets/$1"
     },
     {
       "src": "/(.*)",

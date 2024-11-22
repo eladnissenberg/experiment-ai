@@ -1,5 +1,6 @@
 ﻿import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { apiService } from '../../utils/api';
 import {
   Users,
   TrendingUp,
@@ -20,7 +21,7 @@ import {
   ChevronRight
 } from "lucide-react";
 
-// Refined MetricCard with minimal design
+// Utility Components
 const MetricCard = ({ title, value, change, trend }) => {
   return (
     <div className="bg-white rounded-xl border border-gray-100 px-4 py-3">
@@ -39,7 +40,6 @@ const MetricCard = ({ title, value, change, trend }) => {
   );
 };
 
-// Refined TimeframeSelector
 const TimeframeSelector = ({ value, onChange, onRefresh }) => {
   return (
     <div className="flex items-center space-x-2">
@@ -62,15 +62,11 @@ const TimeframeSelector = ({ value, onChange, onRefresh }) => {
   );
 };
 
-// Updated ExperimentTable with pagination
 const ExperimentTable = ({ experiments, title, type, onViewAll }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
   
-  // Only apply pagination for suggested experiments
   const shouldPaginate = type === 'suggested';
-  
-  // Calculate pagination values
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = shouldPaginate ? 
@@ -174,7 +170,6 @@ const ExperimentTable = ({ experiments, title, type, onViewAll }) => {
         </table>
       </div>
       
-      {/* Pagination Controls */}
       {shouldPaginate && totalPages > 1 && (
         <div className="px-6 py-3 border-t border-gray-100 flex items-center justify-between">
           <div className="text-sm text-gray-500">
@@ -225,7 +220,6 @@ const ExperimentTable = ({ experiments, title, type, onViewAll }) => {
   );
 };
 
-// Refined InsightsCard for both Data and Market insights
 const InsightsCard = ({ insights, type }) => {
   const isDataInsight = type === 'data';
 
@@ -312,7 +306,6 @@ const InsightsCard = ({ insights, type }) => {
   );
 };
 
-// Combined Insights Container
 const InsightsContainer = ({ dataInsights, marketInsights }) => {
   return (
     <div className="bg-white rounded-xl border border-gray-200">
@@ -336,7 +329,6 @@ const InsightsContainer = ({ dataInsights, marketInsights }) => {
   );
 };
 
-// Refined LearningRepository
 const LearningRepository = ({ learnings }) => {
   return (
     <div className="bg-white rounded-xl border border-gray-200">
@@ -399,123 +391,148 @@ const Dashboard = () => {
   const [marketInsights, setMarketInsights] = useState([]);
   const [dataInsights, setDataInsights] = useState([]);
 
+  // Check API health function
+  const checkApiHealth = async () => {
+    try {
+      await apiService.checkHealth();
+      return true;
+    } catch (error) {
+      console.error('API Health Check Failed:', error);
+      return false;
+    }
+  };
+
   const fetchDashboardData = async () => {
     setLoading(true);
     setError(null);
+
     try {
-      // Metric data
-      const mockMetrics = {
-        experiments: {
-          value: '24',
-          change: 12.5
-        },
-        conversion: {
-          value: '15.8%',
-          change: 8.2
-        },
-        traffic: {
-          value: '125.4k',
-          change: -2.1
-        },
-        velocity: {
-          value: '3.2/week',
-          change: 15.0
-        }
-      };
-
-      // Mock learning repository data
-      const mockLearnings = [
-        {
-          id: 1,
-          pattern: "Social Proof Elements",
-          description: "Adding social proof consistently shows positive impact across different user segments",
-          applications: 12,
-          avgImpact: "+18%",
-          tags: ["conversion", "trust"]
-        },
-        {
-          id: 2,
-          pattern: "Progressive Disclosure",
-          description: "Gradually revealing information improves form completion rates",
-          applications: 8,
-          avgImpact: "+12%",
-          tags: ["ux", "forms"]
-        }
-      ];
-
-      // Mock market intelligence data
-      const mockMarketInsights = [
-        {
-          id: 1,
-          type: "trend",
-          title: "Rising Mobile Checkout Trend",
-          description: "Industry seeing 25% increase in mobile checkout completion rates with simplified forms",
-          impact: "high",
-          source: "Industry Report",
-          sourceUrl: "#",
-          timestamp: new Date().toISOString()
-        },
-        {
-          id: 2,
-          type: "competitor",
-          title: "Competitor Feature Launch",
-          description: "Major competitor launched one-click checkout experience",
-          impact: "medium",
-          source: "Market Analysis",
-          sourceUrl: "#",
-          timestamp: new Date().toISOString()
-        }
-      ];
-
-      // Mock data insights
-      const mockDataInsights = [
-        {
-          id: 1,
-          title: "Mobile Conversion Gap",
-          description: "Mobile conversion rate is 40% lower than desktop during peak hours",
-          confidence: 95,
-          dataPoints: 25000,
-          metrics: [
-            { name: "Mobile Conv.", value: "2.1%", change: -15 },
-            { name: "Desktop Conv.", value: "3.5%", change: 5 },
-            { name: "Gap Trend", value: "Growing", change: -8 }
-          ]
-        },
-        {
-          id: 2,
-          title: "High-Value Customer Pattern",
-          description: "Users who interact with size guide are 2x more likely to purchase",
-          confidence: 88,
-          dataPoints: 15000,
-          metrics: [
-            { name: "Guide Usage", value: "15%", change: 12 },
-            { name: "Conv. Rate", value: "4.2%", change: 25 },
-            { name: "AOV", value: "$128", change: 15 }
-          ]
-        }
-      ];
+      // First check API health
+      const isHealthy = await checkApiHealth();
+      if (!isHealthy) {
+        throw new Error('API is not available at the moment');
+      }
 
       // Fetch experiments data
-      const activeResponse = await fetch('http://localhost:3000/api/v1/experiments?status=running');
-      const suggestedResponse = await fetch('http://localhost:3000/api/v1/experiments?status=proposed');
+      try {
+        const [activeExperimentsData, suggestedExperimentsData] = await Promise.all([
+          apiService.getExperiments('running'),
+          apiService.getExperiments('proposed')
+        ]);
 
-      const activeExperimentsData = await activeResponse.json();
-      const suggestedExperimentsData = await suggestedResponse.json();
+        setActiveExperiments(activeExperimentsData);
+        setSuggestedExperiments(suggestedExperimentsData);
 
-      setMetrics(mockMetrics);
-      setActiveExperiments(activeExperimentsData);
-      setSuggestedExperiments(suggestedExperimentsData);
-      setLearnings(mockLearnings);
-      setMarketInsights(mockMarketInsights);
-      setDataInsights(mockDataInsights);
-      setLoading(false);
+        // Mock data - to be replaced with real API calls later
+        const mockMetrics = {
+          experiments: {
+            value: activeExperimentsData.length.toString(),
+            change: 12.5
+          },
+          conversion: {
+            value: '15.8%',
+            change: 8.2
+          },
+          traffic: {
+            value: '125.4k',
+            change: -2.1
+          },
+          velocity: {
+            value: '3.2/week',
+            change: 15.0
+          }
+        };
+
+        const mockLearnings = [
+          {
+            id: 1,
+            pattern: "Social Proof Elements",
+            description: "Adding social proof consistently shows positive impact across different user segments",
+            applications: 12,
+            avgImpact: "+18%",
+            tags: ["conversion", "trust"]
+          },
+          {
+            id: 2,
+            pattern: "Progressive Disclosure",
+            description: "Gradually revealing information improves form completion rates",
+            applications: 8,
+            avgImpact: "+12%",
+            tags: ["ux", "forms"]
+          }
+        ];
+
+        const mockMarketInsights = [
+          {
+            id: 1,
+            type: "trend",
+            title: "Rising Mobile Checkout Trend",
+            description: "Industry seeing 25% increase in mobile checkout completion rates with simplified forms",
+            impact: "high",
+            source: "Industry Report",
+            sourceUrl: "#",
+            timestamp: new Date().toISOString()
+          },
+          {
+            id: 2,
+            type: "competitor",
+            title: "Competitor Feature Launch",
+            description: "Major competitor launched one-click checkout experience",
+            impact: "medium",
+            source: "Market Analysis",
+            sourceUrl: "#",
+            timestamp: new Date().toISOString()
+          }
+        ];
+
+        const mockDataInsights = [
+          {
+            id: 1,
+            title: "Mobile Conversion Gap",
+            description: "Mobile conversion rate is 40% lower than desktop during peak hours",
+            confidence: 95,
+            dataPoints: 25000,
+            metrics: [
+              { name: "Mobile Conv.", value: "2.1%", change: -15 },
+              { name: "Desktop Conv.", value: "3.5%", change: 5 },
+              { name: "Gap Trend", value: "Growing", change: -8 }
+            ]
+          },
+          {
+            id: 2,
+            title: "High-Value Customer Pattern",
+            description: "Users who interact with size guide are 2x more likely to purchase",
+            confidence: 88,
+            dataPoints: 15000,
+            metrics: [
+              { name: "Guide Usage", value: "15%", change: 12 },
+              { name: "Conv. Rate", value: "4.2%", change: 25 },
+              { name: "AOV", value: "$128", change: 15 }
+            ]
+          }
+        ];
+
+        setMetrics(mockMetrics);
+        setLearnings(mockLearnings);
+        setMarketInsights(mockMarketInsights);
+        setDataInsights(mockDataInsights);
+
+      } catch (apiError) {
+        console.error('API Error:', apiError);
+        throw new Error('Failed to fetch experiments data. Please try again later.');
+      }
     } catch (err) {
       setError(err.message);
+      console.error('Dashboard Error:', err);
+    } finally {
       setLoading(false);
     }
   };
 
+  // Debug current environment
   useEffect(() => {
+    console.log('Current Environment:', import.meta.env.MODE);
+    console.log('API URL:', import.meta.env.VITE_API_URL);
     fetchDashboardData();
   }, [timeframe]);
 
@@ -523,9 +540,15 @@ const Dashboard = () => {
     setTimeframe(newTimeframe);
   };
 
+  const handleRefresh = () => {
+    fetchDashboardData();
+  };
+
   const handleViewAll = (type) => {
     if (type === 'suggested') {
       navigate('/suggested-experiments');
+    } else if (type === 'active') {
+      navigate('/experiments');
     }
   };
 
@@ -549,14 +572,23 @@ const Dashboard = () => {
     return (
       <div className="p-6">
         <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-          <p className="text-red-600">{error}</p>
-          <button
-            onClick={fetchDashboardData}
-            className="mt-2 text-sm text-red-600 font-medium hover:text-red-700 flex items-center"
-          >
-            <RefreshCcw className="w-4 h-4 mr-1" />
-            Retry
-          </button>
+          <h3 className="text-lg font-medium text-red-800 mb-2">Error Loading Dashboard</h3>
+          <p className="text-red-600 mb-4">{error}</p>
+          <div className="flex space-x-4">
+            <button
+              onClick={handleRefresh}
+              className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+            >
+              <RefreshCcw className="w-4 h-4 mr-2" />
+              Retry
+            </button>
+            <button
+              onClick={() => setError(null)}
+              className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
+              Dismiss
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -595,12 +627,19 @@ const Dashboard = () => {
       <div className="flex items-center justify-between mb-4">
         <div>
           <h1 className="text-xl font-semibold text-gray-900">Dashboard</h1>
-          <p className="text-sm text-gray-600">Track and analyze your experimentation program</p>
+          <div className="flex items-center space-x-2">
+            <p className="text-sm text-gray-600">Track and analyze your experimentation program</p>
+            {import.meta.env.DEV && (
+              <span className="px-2 py-1 text-xs font-medium text-blue-600 bg-blue-50 rounded-full">
+                Development Mode
+              </span>
+            )}
+          </div>
         </div>
         <TimeframeSelector
           value={timeframe}
           onChange={handleTimeframeChange}
-          onRefresh={fetchDashboardData}
+          onRefresh={handleRefresh}
         />
       </div>
 

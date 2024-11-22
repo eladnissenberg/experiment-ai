@@ -7,78 +7,34 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Request logging middleware
 app.use(morgan('dev'));
 app.use(express.json());
 
-// Request details logging
-app.use((req, res, next) => {
-  const allowedOrigins = [
-    'https://www.supporteam.io',
-    'http://localhost:5177',
-    'http://localhost:3000'
-  ];
-
-  const origin = req.headers.origin;
-  if (allowedOrigins.includes(origin)) {
-    res.header('Access-Control-Allow-Origin', origin);
-  }
-
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-  res.header('Access-Control-Allow-Credentials', 'true');
-
-  if (req.method === 'OPTIONS') {
-    res.status(204).end();
-    return;
-  }
-
-  next();
-});
-
+// Unified CORS configuration
 const corsOptions = {
-  origin: '*',
+  origin: (origin, callback) => {
+    const allowedOrigins = [
+      'https://www.supporteam.io',
+      'http://localhost:5177',
+      'http://localhost:3000',
+      'https://experiment-d8r8qsukz-experiment-ai.vercel.app'
+    ];
+    
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: [
-    'Origin',
-    'X-Requested-With',
-    'Content-Type',
-    'Accept',
-    'Authorization',
-    'Access-Control-Allow-Origin',
-    'Access-Control-Allow-Methods',
-    'Access-Control-Allow-Headers'
-  ],
+  allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'Authorization'],
   credentials: true,
-  preflightContinue: false,
   optionsSuccessStatus: 204
 };
 
 app.use(cors(corsOptions));
 
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-  res.header('Access-Control-Expose-Headers', 'Content-Length');
-  res.header('Cross-Origin-Resource-Policy', 'cross-origin');
-  res.header('Cross-Origin-Embedder-Policy', 'credentialless');
-
-  console.log('\n🔒 CORS Headers Set:', {
-    timestamp: new Date().toISOString(),
-    origin: res.getHeader('Access-Control-Allow-Origin'),
-    methods: res.getHeader('Access-Control-Allow-Methods'),
-    headers: res.getHeader('Access-Control-Allow-Headers')
-  });
-
-  if (req.method === 'OPTIONS') {
-    res.status(204).end();
-    return;
-  }
-
-  next();
-});
-
+// Response logging middleware
 app.use((req, res, next) => {
   const originalSend = res.send;
   res.send = function (data) {
@@ -106,13 +62,9 @@ app.get('/api/v1/experiments/:id/script', (req, res, next) => {
 
   res.set({
     'Content-Type': 'application/javascript',
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
     'Cache-Control': 'no-cache, no-store, must-revalidate',
     'Pragma': 'no-cache',
-    'Expires': '0',
-    'Cross-Origin-Resource-Policy': 'cross-origin'
+    'Expires': '0'
   });
 
   next();
@@ -141,6 +93,7 @@ app.get('/', (req, res) => {
   });
 });
 
+// 404 handler
 app.use((req, res) => {
   res.status(404).json({
     error: 'Not Found',
@@ -149,6 +102,7 @@ app.use((req, res) => {
   });
 });
 
+// Error handler
 app.use((err, req, res, next) => {
   console.error('\n❌ Error:', {
     timestamp: new Date().toISOString(),

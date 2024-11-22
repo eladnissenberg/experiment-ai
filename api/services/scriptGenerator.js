@@ -7,7 +7,7 @@
     OBSERVER_THROTTLE: 100
   },
   production: {
-    API_URL: 'https://your-production-domain.com',
+    API_URL: 'https://experiment-ai.vercel.app',
     DEBUG: false,
     RETRY_ATTEMPTS: 2,
     RETRY_DELAY: 2000,
