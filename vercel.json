@@ -1,6 +1,6 @@
 {
-  "buildCommand": null,
-  "devCommand": null,
   "framework": "vite",
-  "installCommand": "npm install"
+  "buildCommand": "npm run build",
+  "installCommand": "npm install",
+  "outputDirectory": "dist"
 }
