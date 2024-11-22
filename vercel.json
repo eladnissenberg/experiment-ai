@@ -1,20 +1,6 @@
 {
-  "version": 2,
-  "buildCommand": "npm run build",
-  "installCommand": "npm install",
-  "outputDirectory": "dist",
+  "buildCommand": null,
+  "devCommand": null,
   "framework": "vite",
-  "routes": [
-    {
-      "src": "/assets/(.*)",
-      "headers": { "cache-control": "public, max-age=31536000, immutable" }
-    },
-    {
-      "handle": "filesystem"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/index.html"
-    }
-  ]
+  "installCommand": "npm install"
 }
