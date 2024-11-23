@@ -9,6 +9,10 @@ const app = express();
 app.use(morgan('dev'));
 app.use(express.json());
 
+
+
+
+
 // Unified CORS configuration
 const corsOptions = {
   origin: (origin, callback) => {
