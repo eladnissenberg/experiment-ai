@@ -31,7 +31,7 @@ const corsOptions = {
   optionsSuccessStatus: 204,
 };
 
-app.use(cors(corsOptions));
+app.use(cors());
 
 // Response logging middleware
 app.use((req, res, next) => {
