@@ -191,7 +191,7 @@ const SuggestedExperiments = () => {
 
   const fetchExperiments = async () => {
     try {
-      const response = await fetch('http://localhost:3000/api/v1/experiments?status=proposed');
+      const response = await fetch('/api/v1/experiments?status=proposed');
       if (!response.ok) throw new Error('Failed to fetch suggestions');
       const data = await response.json();
       setExperiments(data);
@@ -219,7 +219,7 @@ const SuggestedExperiments = () => {
 
   const handleStartExperiment = async (experiment) => {
     try {
-      const response = await fetch(`http://localhost:3000/api/v1/experiments/${experiment.id}/status`, {
+      const response = await fetch(`/api/v1/experiments/${experiment.id}/status`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',

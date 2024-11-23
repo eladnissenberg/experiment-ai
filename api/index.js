@@ -85,7 +85,7 @@ app.get('/proxy', async (req, res) => {
 
 app.use('/api/v1/experiments', experimentRoutes);
 app.use('/api/v1/tracking', trackingRoutes);
-app.use('/health', healthRoutes);
+app.use('/api/v1/health', healthRoutes);
 
 app.get('/', (req, res) => {
   res.json({

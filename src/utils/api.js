@@ -32,7 +32,7 @@ export const apiService = {
     try {
       console.log('Health check URL:', `${apiConfig.baseURL}/health`);
       
-      const response = await fetch(`${apiConfig.baseURL}/health`, {
+      const response = await fetch(`${apiConfig.baseURL}/api/v1`, {
         method: 'GET',
         headers: {
           'Accept': 'application/json',
