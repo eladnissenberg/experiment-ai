@@ -12,7 +12,6 @@
         "distDir": "dist"
       }
     }
-
   ],
   "routes": [
     {
@@ -25,13 +24,9 @@
     }
   ],
   "rewrites": [
-    { "source": "/(.*)", "destination": "/" }
+    {
+      "source": "/(.*)",
+      "destination": "/"
+    }
   ]
 }
-
-
-
-
-
-
-
