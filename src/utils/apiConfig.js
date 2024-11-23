@@ -8,7 +8,7 @@ const apiConfig = {
     endpoints: {
       experiments: '/api/v1/experiments',
       tracking: '/api/v1/tracking',
-      health: '/health', // This matches your API route
+      health: '/api/v1/health', // This matches your API route
     },
     
     // Request configurations
