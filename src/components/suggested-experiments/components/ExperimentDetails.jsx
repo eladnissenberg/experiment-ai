@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { 
   ArrowRight, Users, Clock, Target, Lightbulb,
   Beaker, Rocket, Share2, CheckCircle, BarChart2 
@@ -6,6 +7,7 @@ import {
 import { SegmentBehaviorComparison } from '@/components/shared/analysis/analysis.index';
 
 const ExperimentDetails = ({ experiment, onClose, onStartExperiment }) => {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('overview');
   const [copied, setCopied] = useState(false);
   const [showAnalysis, setShowAnalysis] = useState(false);
@@ -19,7 +21,12 @@ const ExperimentDetails = ({ experiment, onClose, onStartExperiment }) => {
   };
 
   const handleStartExperiment = () => {
-    window.location.href = "http://localhost:5177/experiments/editor-testimonials";
+    try {
+      navigate('/experiments/editor-testimonials');
+    } catch (error) {
+      console.error('Navigation error:', error);
+      window.location.href = `${window.location.origin}/experiments/editor-testimonials`;
+    }
   };
 
   const tabs = [

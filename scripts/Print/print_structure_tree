@@ -1,0 +1,46 @@
+# Define the base path
+$basePath = "C:\Users\Eli\Desktop\app3"
+
+# Define paths to exclude (added .git directory)
+$excludedPaths = @(
+    "C:\Users\Eli\Desktop\app3\api\package-lock.json",
+    "C:\Users\Eli\Desktop\app3\node_modules",
+    "C:\Users\Eli\Desktop\app3\api\node_modules",
+    "C:\Users\Eli\Desktop\app3\.gitignore",
+    "C:\Users\Eli\Desktop\app3\.git"  # Added this line
+)
+
+function Print-Tree {
+    param (
+        [string]$Path,
+        [string]$Prefix = ""
+    )
+    
+    # Get the items in the current directory, sorted
+    $items = Get-ChildItem -Path $Path -Force | Sort-Object Name
+
+    for ($i = 0; $i -lt $items.Count; $i++) {
+        $item = $items[$i]
+        $itemPath = $item.FullName
+        
+        # Skip excluded paths
+        if ($excludedPaths -contains $itemPath -or ($excludedPaths | Where-Object { $itemPath -like "$_*" })) {
+            continue
+        }
+
+        # Determine the connector for the tree
+        $connector = if ($i -eq $items.Count - 1) { "└── " } else { "├── " }
+
+        # Print the item
+        Write-Host "$Prefix$connector$($item.Name)"  # Fixed the string interpolation
+
+        # Recurse into subdirectories
+        if ($item.PSIsContainer) {
+            $newPrefix = if ($i -eq $items.Count - 1) { "$Prefix    " } else { "$Prefix│   " }
+            Print-Tree -Path $item.FullName -Prefix $newPrefix
+        }
+    }
+}
+
+# Start the tree print
+Print-Tree -Path $basePath

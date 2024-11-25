@@ -34,10 +34,36 @@ const defaultExperiments = [
     expectedOutcome: "+10-15% lift in conversion rates for first-time visitors, especially from regions with strong brand loyalty or community identity.",
     optimizationType: OPTIMIZATION_TYPES.TRUST,
     device: DEVICE_TYPES.ALL,
-    variations: {
-      control: { color: null },
-      variant: { color: "#4A90E2" }
-    },
+    variants: [
+      {
+        id: 'control',
+        name: 'Standard Social Proof',
+        description: 'Current generic social proof messaging',
+        traffic: 33.33,
+        isControl: true,
+        styles: {}
+      },
+      {
+        id: 'variant-a',
+        name: 'Texas-Specific Social Proof',
+        description: 'Localized messaging for Texas visitors',
+        traffic: 33.33,
+        styles: {
+          testimonialSource: "Texas",
+          messageTemplate: "Trusted by {count}+ Texas businesses"
+        }
+      },
+      {
+        id: 'variant-b',
+        name: 'Florida-Specific Social Proof',
+        description: 'Localized messaging for Florida visitors',
+        traffic: 33.33,
+        styles: {
+          testimonialSource: "Florida",
+          messageTemplate: "Trusted by {count}+ Florida businesses"
+        }
+      }
+    ],
     startDate: new Date().toISOString(),
     confidence: 85,
     traffic: 50,
@@ -64,8 +90,8 @@ const defaultExperiments = [
     },
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString()
-  },
-  {
+},
+{
     id: "suggested-2",
     title: "Dynamic Urgency for High Cart Value Users",
     description: "Implement dynamic stock indicators for high-value carts",
@@ -82,10 +108,50 @@ const defaultExperiments = [
     expectedOutcome: "+12% increase in checkout completion rates for high-value carts, as users are nudged toward faster decision-making without feeling pressured.",
     optimizationType: OPTIMIZATION_TYPES.CONTENT,
     device: DEVICE_TYPES.ALL,
-    variations: {
-      control: { color: null },
-      variant: { color: "#27AE60" }
-    },
+    variants: [
+      {
+        id: 'control',
+        name: 'Standard Cart Display',
+        description: 'Current cart display without urgency indicators',
+        traffic: 25,
+        isControl: true,
+        styles: {}
+      },
+      {
+        id: 'variant-a',
+        name: 'Stock Level Indicator',
+        description: 'Shows remaining stock levels for cart items',
+        traffic: 25,
+        styles: {
+          color: "#27AE60",
+          messageType: "stock_count",
+          template: "Only {count} left in stock"
+        }
+      },
+      {
+        id: 'variant-b',
+        name: 'Time-Based Urgency',
+        description: 'Shows time-sensitive messaging',
+        traffic: 25,
+        styles: {
+          color: "#27AE60",
+          messageType: "time_based",
+          template: "Order within {time} for next-day delivery"
+        }
+      },
+      {
+        id: 'variant-c',
+        name: 'Combined Indicator',
+        description: 'Shows both stock and time-based messaging',
+        traffic: 25,
+        styles: {
+          color: "#27AE60",
+          messageType: "combined",
+          stockTemplate: "Only {count} left",
+          timeTemplate: "Order soon for next-day delivery"
+        }
+      }
+    ],
     startDate: new Date().toISOString(),
     confidence: 78,
     traffic: 50,
@@ -112,199 +178,307 @@ const defaultExperiments = [
     },
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString()
-  },
-  {
-    id: "suggested-3",
-    title: "Customized Value Propositions for Mobile Users",
-    description: "Optimize product information display for mobile users",
-    priority: "high",
-    successProbability: 82,
-    upliftPotential: "15%",
-    timeToImplement: "2-4 weeks",
-    stage: "proposed",
-    status: "proposed",
-    targetURL: "www.supporteam.io/products",
-    insight: "Mobile users have a lower engagement rate with detailed product descriptions compared to desktop users, often scrolling past key value points. This suggests they may prefer more concise, visually engaging content.",
-    hypothesis: "Displaying simplified, visual-based value propositions (e.g., icons with short descriptions) on mobile product pages will improve engagement and reduce bounce rates by catering to mobile browsing behaviors.",
-    recommendation: "Test replacing lengthy product descriptions with a quick, icon-based summary on mobile, focusing on the top three benefits or features, with an option to 'read more' for details.",
-    expectedOutcome: "+15% increase in engagement and +8% decrease in bounce rates on mobile, as users are able to quickly absorb product information in a format that suits mobile browsing.",
-    optimizationType: OPTIMIZATION_TYPES.LAYOUT,
-    device: DEVICE_TYPES.MOBILE,
-    variations: {
-      control: { color: null },
-      variant: { color: "#9B51E0" }
+},
+{
+  id: "suggested-3",
+  title: "Customized Value Propositions for Mobile Users",
+  description: "Optimize product information display for mobile users",
+  priority: "high",
+  successProbability: 82,
+  upliftPotential: "15%",
+  timeToImplement: "2-4 weeks",
+  stage: "proposed",
+  status: "proposed",
+  targetURL: "www.supporteam.io/products",
+  insight: "Mobile users have a lower engagement rate with detailed product descriptions compared to desktop users, often scrolling past key value points. This suggests they may prefer more concise, visually engaging content.",
+  hypothesis: "Displaying simplified, visual-based value propositions (e.g., icons with short descriptions) on mobile product pages will improve engagement and reduce bounce rates by catering to mobile browsing behaviors.",
+  recommendation: "Test replacing lengthy product descriptions with a quick, icon-based summary on mobile, focusing on the top three benefits or features, with an option to 'read more' for details.",
+  expectedOutcome: "+15% increase in engagement and +8% decrease in bounce rates on mobile, as users are able to quickly absorb product information in a format that suits mobile browsing.",
+  optimizationType: OPTIMIZATION_TYPES.LAYOUT,
+  device: DEVICE_TYPES.MOBILE,
+  variants: [
+    {
+      id: 'control',
+      name: 'Standard Mobile Layout',
+      description: 'Current product description layout',
+      traffic: 33.33,
+      isControl: true,
+      styles: {}
     },
+    {
+      id: 'variant-a',
+      name: 'Icon-Based Summary',
+      description: 'Key features displayed with icons',
+      traffic: 33.33,
+      styles: {
+        displayType: "icon_summary",
+        iconColor: "#9B51E0",
+        maxFeatures: 3,
+        showExpandOption: true
+      }
+    },
+    {
+      id: 'variant-b',
+      name: 'Progressive Disclosure',
+      description: 'Expandable sections with visual indicators',
+      traffic: 33.33,
+      styles: {
+        displayType: "accordion",
+        accentColor: "#9B51E0",
+        defaultExpanded: false,
+        animationType: "smooth"
+      }
+    }
+  ],
+  startDate: new Date().toISOString(),
+  confidence: 82,
+  traffic: 50,
+  duration: {
     startDate: new Date().toISOString(),
-    confidence: 82,
-    traffic: 50,
-    duration: {
-      startDate: new Date().toISOString(),
-      endDate: new Date(Date.now() + 21 * 24 * 60 * 60 * 1000).toISOString()
-    },
-    metrics: {
-      primary: "engagement",
-      secondary: ["bounce_rate", "time_on_page"]
-    },
-    audience: {
-      targeting: "mobile_users",
-      percentage: 50
-    },
-    results: {
-      visitors: 0,
-      conversions: 0,
-      variantVisitors: 0,
-      variantConversions: 0,
-      controlConversionRate: 0,
-      variantConversionRate: 0,
-      improvement: 0
-    },
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+    endDate: new Date(Date.now() + 21 * 24 * 60 * 60 * 1000).toISOString()
   },
-  {
-    id: "suggested-4",
-    title: "Prioritize Social Proof for First-Time Users",
-    description: "Swap the order of the homepage folds to display testimonials earlier",
-    priority: "high",
-    successProbability: 85,
-    upliftPotential: "10-15%",
-    timeToImplement: "1-2 weeks",
-    stage: "proposed",
-    status: "proposed",
-    targetURL: "www.supporteam.io/homepage",
-    insight: "Users who reached the third homepage fold (Testimonials) converted 627% more than those who stopped at the second fold (Product Overview). However, only 18% scrolled that far.",
-    hypothesis: "Displaying testimonials earlier will increase conversions by exposing users to social proof sooner.",
-    recommendation: "Swap the order of the folds: Testimonials first, Product Overview second.",
-    expectedOutcome: "+10-15% lift in conversion rates for first-time visitors.",
-    optimizationType: OPTIMIZATION_TYPES.LAYOUT,
-    device: DEVICE_TYPES.ALL,
-    variations: {
-      control: { layoutOrder: "productFirst" },
-      variant: { layoutOrder: "testimonialsFirst" }
+  metrics: {
+    primary: "engagement",
+    secondary: ["bounce_rate", "time_on_page"]
+  },
+  audience: {
+    targeting: "mobile_users",
+    percentage: 50
+  },
+  results: {
+    visitors: 0,
+    conversions: 0,
+    variantVisitors: 0,
+    variantConversions: 0,
+    controlConversionRate: 0,
+    variantConversionRate: 0,
+    improvement: 0
+  },
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString()
+},
+{
+  id: "suggested-4",
+  title: "Prioritize Social Proof for First-Time Users",
+  description: "Swap the order of the homepage folds to display testimonials earlier",
+  priority: "high",
+  successProbability: 85,
+  upliftPotential: "10-15%",
+  timeToImplement: "1-2 weeks",
+  stage: "running",
+  status: "running",
+  targetURL: "www.supporteam.io/homepage",
+  insight: "Users who reached the third homepage fold (Testimonials) converted 627% more than those who stopped at the second fold (Product Overview). However, only 18% scrolled that far.",
+  hypothesis: "Displaying testimonials earlier will increase conversions by exposing users to social proof sooner.",
+  recommendation: "Swap the order of the folds: Testimonials first, Product Overview second.",
+  expectedOutcome: "+10-15% lift in conversion rates for first-time visitors.",
+  optimizationType: OPTIMIZATION_TYPES.LAYOUT,
+  device: DEVICE_TYPES.ALL,
+  variants: [
+    {
+      id: 'control',
+      name: 'Standard Layout',
+      description: 'Current homepage fold order (Product Overview first)',
+      traffic: 50,
+      isControl: true,
+      styles: {
+        layoutOrder: "productFirst",
+        sections: ["hero", "features", "testimonials", "pricing"]
+      }
     },
+    {
+      id: 'variant-a',
+      name: 'Testimonials-First Layout',
+      description: 'Modified layout with testimonials above product overview',
+      traffic: 50,
+      styles: {
+        layoutOrder: "testimonialsFirst",
+        sections: ["hero", "testimonials", "features", "pricing"]
+      }
+    }
+  ],
+  startDate: new Date().toISOString(),
+  confidence: 85,
+  traffic: 50,
+  duration: {
     startDate: new Date().toISOString(),
-    confidence: 85,
-    traffic: 50,
-    duration: {
-      startDate: new Date().toISOString(),
-      endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
-    },
-    metrics: {
-      primary: "conversion_rate",
-      secondary: ["engagement"]
-    },
-    audience: {
-      targeting: "first_time_visitors",
-      percentage: 50
-    },
-    results: {
-      visitors: 0,
-      conversions: 0,
-      variantVisitors: 0,
-      variantConversions: 0,
-      controlConversionRate: 0,
-      variantConversionRate: 0,
-      improvement: 0
-    },
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+    endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
   },
-  {
-    id: "suggested-5",
-    title: "Improve Header CTA Click-Through Rate",
-    description: "Enlarge the header's CTA button to increase visibility",
-    priority: "medium",
-    successProbability: 75,
-    upliftPotential: "5%",
-    timeToImplement: "1 week",
-    stage: "proposed",
-    status: "proposed",
-    targetURL: "www.supporteam.io",
-    insight: "The header's CTA click-through rate is below the industry benchmark, and the button size is smaller compared to most websites in the same space.",
-    hypothesis: "Enlarging the header's CTA will make it more noticeable, increasing the click-through rate and ultimately driving higher conversions.",
-    recommendation: "Increase the size of the header's CTA button.",
-    expectedOutcome: "+5% lift in conversion rate.",
-    optimizationType: OPTIMIZATION_TYPES.VISUAL_DESIGN,
-    device: DEVICE_TYPES.ALL,
-    variations: {
-      control: { ctaSize: "small" },
-      variant: { ctaSize: "large" }
+  metrics: {
+    primary: "conversion_rate",
+    secondary: ["engagement"]
+  },
+  audience: {
+    targeting: "first_time_visitors",
+    percentage: 50
+  },
+  results: {
+    visitors: 1250,
+    conversions: 175,
+    variantVisitors: 625,
+    variantConversions: 100,
+    controlConversionRate: 12.0,
+    variantConversionRate: 16.0,
+    improvement: 33.3
+  },
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString()
+},
+{
+  id: "suggested-5",
+  title: "Improve Header CTA Click-Through Rate",
+  description: "Enlarge the header's CTA button to increase visibility",
+  priority: "medium",
+  successProbability: 75,
+  upliftPotential: "5%",
+  timeToImplement: "1 week",
+  stage: "running",
+  status: "running",
+  targetURL: "www.supporteam.io",
+  insight: "The header's CTA click-through rate is below the industry benchmark, and the button size is smaller compared to most websites in the same space.",
+  hypothesis: "Enlarging the header's CTA will make it more noticeable, increasing the click-through rate and ultimately driving higher conversions.",
+  recommendation: "Increase the size of the header's CTA button.",
+  expectedOutcome: "+5% lift in conversion rate.",
+  optimizationType: OPTIMIZATION_TYPES.VISUAL_DESIGN,
+  device: DEVICE_TYPES.ALL,
+  variants: [
+    {
+      id: 'control',
+      name: 'Current CTA Size',
+      description: 'Existing header CTA button size',
+      traffic: 33.33,
+      isControl: true,
+      styles: {
+        ctaSize: "small",
+        padding: "8px 16px",
+        fontSize: "14px"
+      }
     },
+    {
+      id: 'variant-a',
+      name: 'Medium CTA',
+      description: 'Moderately enlarged CTA button',
+      traffic: 33.33,
+      styles: {
+        ctaSize: "medium",
+        padding: "12px 24px",
+        fontSize: "16px"
+      }
+    },
+    {
+      id: 'variant-b',
+      name: 'Large CTA',
+      description: 'Significantly enlarged CTA button',
+      traffic: 33.33,
+      styles: {
+        ctaSize: "large",
+        padding: "16px 32px",
+        fontSize: "18px"
+      }
+    }
+  ],
+  startDate: new Date().toISOString(),
+  confidence: 75,
+  traffic: 50,
+  duration: {
     startDate: new Date().toISOString(),
-    confidence: 75,
-    traffic: 50,
-    duration: {
-      startDate: new Date().toISOString(),
-      endDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString()
-    },
-    metrics: {
-      primary: "cta_click_rate",
-      secondary: ["conversion_rate"]
-    },
-    audience: {
-      targeting: "all_visitors",
-      percentage: 50
-    },
-    results: {
-      visitors: 0,
-      conversions: 0,
-      variantVisitors: 0,
-      variantConversions: 0,
-      controlConversionRate: 0,
-      variantConversionRate: 0,
-      improvement: 0
-    },
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+    endDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString()
   },
-  {
-    id: "suggested-6",
-    title: "Anchor Link Hero Section Testimonials",
-    description: "Add an anchor link from the hero section testimonials to the detailed testimonials section",
-    priority: "medium",
-    successProbability: 70,
-    upliftPotential: "4%",
-    timeToImplement: "1 week",
-    stage: "proposed",
-    status: "proposed",
-    targetURL: "www.supporteam.io",
-    insight: "Data shows that 12% of your visitors attempt to click the testimonials container in the hero section, but it currently lacks any functionality.",
-    hypothesis: "Adding an anchor link will create a smoother user experience, increasing engagement and improving the conversion rate.",
-    recommendation: "Implement an anchor link that connects the testimonials in the hero section to the detailed testimonials section.",
-    expectedOutcome: "+4% lift in conversion rate.",
-    optimizationType: OPTIMIZATION_TYPES.NAVIGATION,
-    device: DEVICE_TYPES.ALL,
-    variations: {
-      control: { heroTestimonialsClickable: false },
-      variant: { heroTestimonialsClickable: true }
+  metrics: {
+    primary: "cta_click_rate",
+    secondary: ["conversion_rate"]
+  },
+  audience: {
+    targeting: "all_visitors",
+    percentage: 50
+  },
+  results: {
+    visitors: 2500,
+    conversions: 225,
+    variantVisitors: 1250,
+    variantConversions: 125,
+    controlConversionRate: 8.0,
+    variantConversionRate: 10.0,
+    improvement: 25.0
+  },
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString()
+},
+{
+  id: "suggested-6",
+  title: "Anchor Link Hero Section Testimonials",
+  description: "Add an anchor link from the hero section testimonials to the detailed testimonials section",
+  priority: "medium",
+  successProbability: 70,
+  upliftPotential: "4%",
+  timeToImplement: "1 week",
+  stage: "proposed",
+  status: "proposed",
+  targetURL: "www.supporteam.io",
+  insight: "Data shows that 12% of your visitors attempt to click the testimonials container in the hero section, but it currently lacks any functionality.",
+  hypothesis: "Adding an anchor link will create a smoother user experience, increasing engagement and improving the conversion rate.",
+  recommendation: "Implement an anchor link that connects the testimonials in the hero section to the detailed testimonials section.",
+  expectedOutcome: "+4% lift in conversion rate.",
+  optimizationType: OPTIMIZATION_TYPES.NAVIGATION,
+  device: DEVICE_TYPES.ALL,
+  variants: [
+    {
+      id: 'control',
+      name: 'Standard Testimonials',
+      description: 'Current non-clickable testimonials in hero section',
+      traffic: 50,
+      isControl: true,
+      styles: {
+        heroTestimonialsClickable: false,
+        displayType: "static",
+        cursor: "default"
+      }
     },
+    {
+      id: 'variant-a',
+      name: 'Clickable Testimonials',
+      description: 'Testimonials with smooth scroll anchor functionality',
+      traffic: 50,
+      styles: {
+        heroTestimonialsClickable: true,
+        displayType: "interactive",
+        cursor: "pointer",
+        scrollBehavior: "smooth",
+        anchorOffset: "-80px", // Accounts for fixed header
+        hoverEffect: {
+          scale: 1.02,
+          transition: "all 0.2s ease"
+        }
+      }
+    }
+  ],
+  startDate: new Date().toISOString(),
+  confidence: 70,
+  traffic: 50,
+  duration: {
     startDate: new Date().toISOString(),
-    confidence: 70,
-    traffic: 50,
-    duration: {
-      startDate: new Date().toISOString(),
-      endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
-    },
-    metrics: {
-      primary: "engagement",
-      secondary: ["conversion_rate"]
-    },
-    audience: {
-      targeting: "all_visitors",
-      percentage: 50
-    },
-    results: {
-      visitors: 0,
-      conversions: 0,
-      variantVisitors: 0,
-      variantConversions: 0,
-      controlConversionRate: 0,
-      variantConversionRate: 0,
-      improvement: 0
-    },
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+    endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
   },
+  metrics: {
+    primary: "engagement",
+    secondary: ["conversion_rate"]
+  },
+  audience: {
+    targeting: "all_visitors",
+    percentage: 50
+  },
+  results: {
+    visitors: 0,
+    conversions: 0,
+    variantVisitors: 0,
+    variantConversions: 0,
+    controlConversionRate: 0,
+    variantConversionRate: 0,
+    improvement: 0
+  },
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString()
+},
   {
     id: "suggested-7",
     title: "Reduce Container Height on Mobile",

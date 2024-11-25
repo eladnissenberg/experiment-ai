@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { X } from 'lucide-react';
-import Modal from '../components/Modal';
-import ExperimentDetails from '../components/ExperimentDetails';
+import ExperimentDetails from '@/components/suggested-experiments/components/ExperimentDetails';
+import Modal from '@/components/suggested-experiments/components/Modal';
 import { SegmentBehaviorComparison } from '@/components/shared/analysis/analysis.index';
 
 const ExperimentModal = ({ isOpen, onClose, experiment, onStartExperiment }) => {

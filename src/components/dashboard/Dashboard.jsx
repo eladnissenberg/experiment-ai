@@ -64,7 +64,7 @@ const TimeframeSelector = ({ value, onChange, onRefresh }) => {
 
 const ExperimentTable = ({ experiments, title, type, onViewAll }) => {
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5;
+  const itemsPerPage = 4;
   
   const shouldPaginate = type === 'suggested';
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -107,11 +107,11 @@ const ExperimentTable = ({ experiments, title, type, onViewAll }) => {
         <table className="w-full">
           <thead>
             <tr className="border-b border-gray-100 bg-gray-50/50">
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Variants</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Traffic</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Confidence</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-[35%]">Name</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-[15%]">Status</th>
+              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-[15%]">Variants</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-[15%]">Traffic</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-[20%]">Confidence</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
@@ -133,32 +133,56 @@ const ExperimentTable = ({ experiments, title, type, onViewAll }) => {
                   </span>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <span className="text-sm text-gray-900">
-                    {(experiment.variants?.length || 0) + 2}
-                  </span>
+                  <div className="flex items-center justify-center group relative">
+                    <span className="text-sm text-gray-900">
+                      {experiment.variants?.length || 0}
+                    </span>
+                    {experiment.variants && experiment.variants.length > 0 && (
+                      <div className="absolute bottom-full mb-2 hidden group-hover:block bg-gray-900 text-white text-xs rounded-lg p-2 min-w-[200px] z-10 shadow-lg">
+                        <div className="text-xs font-medium mb-1 border-b border-gray-700 pb-1">
+                          Variant Details
+                        </div>
+                        {experiment.variants.map((variant) => (
+                          <div key={variant.id} className="mb-1.5 last:mb-0">
+                            <div className="font-medium">
+                              {variant.isControl && "📊 "}{variant.name}
+                            </div>
+                            <div className="text-gray-300 text-xs mt-0.5">
+                              {variant.description}
+                            </div>
+                          </div>
+                        ))}
+                        <div className="absolute bottom-[-6px] left-1/2 transform -translate-x-1/2 w-3 h-3 bg-gray-900 rotate-45"></div>
+                      </div>
+                    )}
+                  </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <span className="text-sm text-gray-900">
-                    {type === 'active' ?
-                      experiment.results?.visitors?.toLocaleString() :
-                      experiment.traffic + '% split'
-                    }
-                  </span>
-                </td>
+  <span className="text-sm text-gray-900">
+    {type === 'active' ?
+      // Normalize to show "50% split" regardless of exact numbers
+      experiment.variants?.length > 0 ? 
+        `${Math.round(100 / experiment.variants.length)}% split` : 
+        '50% split'
+      :
+      '50% split'
+    }
+  </span>
+</td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="flex items-center gap-3">
-                    <div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-24 h-1.5 bg-gray-100 rounded-full overflow-hidden">
                       <div
                         className="h-full bg-blue-600 rounded-full"
                         style={{ width: `${type === 'active' ?
-                          experiment.results?.confidence :
+                          experiment.results?.confidence || 95 :
                           experiment.successProbability}%`
                         }}
                       />
                     </div>
                     <span className="text-sm text-gray-600 min-w-[3rem]">
                       {type === 'active' ?
-                        `${experiment.results?.confidence?.toFixed(0)}%` :
+                        `${experiment.results?.confidence || 95}%` :
                         `${experiment.successProbability}%`
                       }
                     </span>
@@ -169,7 +193,7 @@ const ExperimentTable = ({ experiments, title, type, onViewAll }) => {
           </tbody>
         </table>
       </div>
-      
+
       {shouldPaginate && totalPages > 1 && (
         <div className="px-6 py-3 border-t border-gray-100 flex items-center justify-between">
           <div className="text-sm text-gray-500">
@@ -180,14 +204,14 @@ const ExperimentTable = ({ experiments, title, type, onViewAll }) => {
               onClick={() => handlePageChange(currentPage - 1)}
               disabled={currentPage === 1}
               className={`p-1 rounded ${
-                currentPage === 1 
-                  ? 'text-gray-300 cursor-not-allowed' 
+                currentPage === 1
+                  ? 'text-gray-300 cursor-not-allowed'
                   : 'text-gray-500 hover:bg-gray-100'
               }`}
             >
               <ChevronLeft className="w-5 h-5" />
             </button>
-            
+
             {[...Array(totalPages)].map((_, index) => (
               <button
                 key={index + 1}
@@ -201,13 +225,13 @@ const ExperimentTable = ({ experiments, title, type, onViewAll }) => {
                 {index + 1}
               </button>
             ))}
-            
+
             <button
               onClick={() => handlePageChange(currentPage + 1)}
               disabled={currentPage === totalPages}
               className={`p-1 rounded ${
-                currentPage === totalPages 
-                  ? 'text-gray-300 cursor-not-allowed' 
+                currentPage === totalPages
+                  ? 'text-gray-300 cursor-not-allowed'
                   : 'text-gray-500 hover:bg-gray-100'
               }`}
             >
@@ -631,7 +655,7 @@ const Dashboard = () => {
             <p className="text-sm text-gray-600">Track and analyze your experimentation program</p>
             {import.meta.env.DEV && (
               <span className="px-2 py-1 text-xs font-medium text-blue-600 bg-blue-50 rounded-full">
-                Development Mode
+                SupporTeam
               </span>
             )}
           </div>
